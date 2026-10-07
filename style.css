@@ -1,0 +1,419 @@
+/* ============================================================
+   COLOR AND SPACING VARIABLES
+   These are "CSS custom properties" -- reusable values we define
+   once at the top, then reference everywhere else with var(--name).
+   This means if we want to change a color later, we only change it
+   in ONE place instead of hunting through the whole file.
+   ============================================================ */
+:root {
+  --paper-cream: #faf6ed;       /* main page background, like aged paper */
+  --manila: #d9c9a0;            /* folder-tab header background */
+  --manila-dark: #c2ad7a;       /* darker manila for borders/shadows */
+  --ink: #2b2a26;               /* near-black text color, like ink/graphite */
+  --ink-light: #5c5a52;         /* softer gray-brown for secondary text */
+  --red-pen: #b23a2e;           /* red pen accent, used for the "gap" / disadvantaged group */
+  --sticky-yellow: #f6e58d;     /* sticky note color for one essay group */
+  --sticky-mint: #b9ddc9;       /* sticky note color for the other essay group */
+  --line-blue: #a9c7dd;         /* faint ruled-notebook-line color */
+  --shadow: rgba(43, 42, 38, 0.18); /* soft shadow color used under cards */
+}
+
+/* ============================================================
+   BASE PAGE STYLES
+   ============================================================ */
+* {
+  /* box-sizing: border-box means padding and border are INCLUDED in
+     an element's declared width, instead of added on top of it.
+     This makes layout math much more predictable. */
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background-color: var(--paper-cream);
+  /* Subtle repeating lines across the whole page background, like ruled paper */
+  background-image: repeating-linear-gradient(
+    to bottom,
+    transparent,
+    transparent 31px,
+    var(--line-blue) 32px
+  );
+  color: var(--ink);
+  font-family: "Source Serif 4", Georgia, serif;
+  line-height: 1.5;
+}
+
+/* ============================================================
+   HEADER / FOLDER TAB
+   ============================================================ */
+.folder-header {
+  /* flex + centering pushes the folder-tab shape to the middle of the page */
+  display: flex;
+  justify-content: center;
+  padding: 40px 20px 20px;
+}
+
+.folder-tab {
+  background-color: var(--manila);
+  border: 2px solid var(--manila-dark);
+  border-radius: 6px 6px 0 0; /* rounds only the TOP corners, like a real folder tab */
+  padding: 24px 40px;
+  max-width: 700px;
+  text-align: center;
+  box-shadow: 0 6px 14px var(--shadow);
+}
+
+.folder-tab h1 {
+  margin: 0 0 8px;
+  font-size: 2.2rem;
+  font-weight: 700;
+}
+
+.subtitle {
+  margin: 0;
+  color: var(--ink-light);
+  font-size: 0.95rem;
+}
+
+/* ============================================================
+   SUMMARY BOARD (corkboard-style section with the two index
+   cards and the hand-built bar chart)
+   ============================================================ */
+.summary-board {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 20px;
+  text-align: center;
+}
+
+.summary-board h2 {
+  font-size: 1.4rem;
+  margin-bottom: 20px;
+}
+
+.summary-cards {
+  /* flex lays the two cards out side by side, wrapping to a new line on narrow screens */
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: center;
+  margin-bottom: 30px;
+}
+
+/* 
+  .summary-card is the base style shared by both group cards.
+  app.js will ALSO add either "disadvantaged" or "not-disadvantaged"
+  as an extra class, which the rules below use to color each card
+  differently.
+*/
+.summary-card {
+  background: white;
+  border-radius: 4px;
+  padding: 20px 28px;
+  min-width: 220px;
+  box-shadow: 0 4px 10px var(--shadow);
+  border-left: 6px solid var(--ink-light); /* overridden below per group */
+}
+
+.summary-card.disadvantaged {
+  border-left-color: var(--red-pen);
+}
+
+.summary-card.not-disadvantaged {
+  border-left-color: var(--line-blue);
+}
+
+.summary-card h3 {
+  margin: 0 0 10px;
+  font-size: 1rem;
+  color: var(--ink-light);
+  font-weight: 600;
+}
+
+.summary-card .stat-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.95rem;
+  margin-bottom: 4px;
+}
+
+.summary-card .stat-row .value {
+  font-weight: 700;
+}
+
+/* The gap number gets extra emphasis since it's the headline finding */
+.summary-card .gap-value {
+  color: var(--red-pen);
+  font-size: 1.3rem;
+  font-weight: 700;
+}
+
+/* ============================================================
+   HAND-BUILT BAR CHART
+   Each bar is just a <div> whose WIDTH we set with JavaScript,
+   based on the data. No charting library needed for something
+   this simple.
+   ============================================================ */
+.gap-chart {
+  max-width: 500px;
+  margin: 0 auto;
+  text-align: left;
+}
+
+.gap-bar-row {
+  margin-bottom: 16px;
+}
+
+.gap-bar-label {
+  font-size: 0.9rem;
+  margin-bottom: 4px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.gap-bar-track {
+  /* This is the full-width gray background bar that the colored bar sits on top of */
+  background: #eee6d6;
+  border-radius: 4px;
+  height: 18px;
+  overflow: hidden; /* keeps the inner colored bar from poking outside the rounded corners */
+}
+
+.gap-bar-fill {
+  height: 100%;
+  border-radius: 4px;
+  /* transition makes the bar animate smoothly to its final width when the page loads,
+     instead of just snapping instantly to full size */
+  transition: width 0.8s ease-out;
+}
+
+/* ============================================================
+   FILTER CONTROLS
+   ============================================================ */
+.controls {
+  max-width: 900px;
+  margin: 0 auto 20px;
+  padding: 0 20px;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+}
+
+.controls-label {
+  font-size: 0.9rem;
+  color: var(--ink-light);
+}
+
+.filter-btn {
+  /* "inherit" makes the button use the page's font instead of the browser's default button font */
+  font-family: inherit;
+  background: white;
+  border: 1px solid var(--manila-dark);
+  border-radius: 20px; /* large radius relative to height makes it fully pill-shaped */
+  padding: 6px 16px;
+  font-size: 0.85rem;
+  cursor: pointer; /* shows a hand cursor on hover, signaling "this is clickable" */
+  transition: background 0.15s;
+}
+
+.filter-btn:hover {
+  background: var(--paper-cream);
+}
+
+/* .active marks whichever filter button is currently selected */
+.filter-btn.active {
+  background: var(--ink);
+  color: white;
+  border-color: var(--ink);
+}
+
+/* ============================================================
+   ESSAY GRID (the sticky notes)
+   ============================================================ */
+.essay-grid {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 20px;
+  display: grid;
+  /* auto-fill + minmax means: fit as many 220px-minimum columns as will
+     comfortably fit on screen, and let them stretch evenly to fill extra space.
+     This is what makes the grid responsive without writing separate
+     mobile-specific column rules. */
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 24px;
+}
+
+.sticky-note {
+  padding: 16px;
+  border-radius: 2px;
+  /* A slight rotation on each note makes them look hand-placed rather than
+     machine-perfect. app.js sets a different random-ish angle per note. */
+  box-shadow: 0 4px 8px var(--shadow);
+  cursor: pointer;
+  transition: transform 0.15s;
+  font-family: "Caveat", cursive; /* the handwritten font, used only for sticky notes */
+}
+
+.sticky-note:hover {
+  /* Straightening out + lifting slightly on hover gives clear feedback that it's clickable */
+  transform: rotate(0deg) scale(1.04);
+  z-index: 2; /* brings the hovered note above its neighbors so the scale-up doesn't look clipped */
+}
+
+.sticky-note.disadvantaged {
+  background: var(--sticky-yellow);
+}
+
+.sticky-note.not-disadvantaged {
+  background: var(--sticky-mint);
+}
+
+.sticky-note .note-scores {
+  font-family: "Source Serif 4", serif; /* numbers are easier to read in the serif, not the cursive font */
+  font-size: 0.85rem;
+  margin-bottom: 6px;
+  color: var(--ink-light);
+}
+
+.sticky-note .note-id {
+  font-size: 1.3rem;
+  font-weight: 700;
+}
+
+.sticky-note .note-preview {
+  font-size: 1.1rem;
+  margin-top: 8px;
+  /* -webkit-line-clamp truncates text after a set number of lines, adding "..."
+     This keeps every sticky note the same height regardless of essay length. */
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* ============================================================
+   MODAL (the pop-up lined-paper essay view)
+   ============================================================ */
+.modal-overlay {
+  /* position: fixed takes this element OUT of the normal page flow and
+     pins it relative to the browser window, so it stays in place even
+     if the page is scrolled */
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(43, 42, 38, 0.6); /* semi-transparent dark overlay behind the modal */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  z-index: 10; /* ensures the modal sits above every other element on the page */
+}
+
+/* .hidden is toggled on/off by app.js to show or hide the modal */
+.modal-overlay.hidden {
+  display: none;
+}
+
+.modal-paper {
+  background: white;
+  background-image: repeating-linear-gradient(
+    to bottom,
+    transparent,
+    transparent 27px,
+    var(--line-blue) 28px
+  );
+  max-width: 900px;
+  width: 100%;
+  max-height: 85vh; /* vh = "viewport height" -- 85% of the visible browser window height */
+  overflow-y: auto; /* adds a scrollbar inside the modal if content is taller than max-height */
+  border-radius: 4px;
+  padding: 40px;
+  position: relative; /* lets the close button position itself relative to THIS box, not the whole page */
+  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+
+.modal-close {
+  position: absolute;
+  top: 16px;
+  right: 20px;
+  background: none;
+  border: none;
+  font-size: 1.8rem;
+  cursor: pointer;
+  color: var(--ink-light);
+  line-height: 1;
+}
+
+.modal-close:hover {
+  color: var(--ink);
+}
+
+/* Inside the modal, app.js builds a two-column layout: essay on the left, rationale on the right */
+.modal-columns {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr; /* essay column slightly wider than the rationale column */
+  gap: 32px;
+  margin-top: 20px;
+}
+
+/* On narrow screens, stack the two columns instead of squeezing them side by side */
+@media (max-width: 700px) {
+  .modal-columns {
+    grid-template-columns: 1fr;
+  }
+}
+
+.modal-essay-text {
+  font-size: 0.95rem;
+  white-space: pre-wrap; /* preserves the paragraph breaks already in the essay text */
+}
+
+.modal-rationale {
+  font-size: 0.95rem;
+}
+
+/* ============================================================
+   KEYWORD HIGHLIGHTING
+   app.js wraps matched keywords in <mark> tags with one of these
+   category classes, and these rules color each category differently.
+   ============================================================ */
+mark {
+  /* Reset the browser's default yellow highlight so we can set our own colors per category */
+  background: none;
+  padding: 1px 3px;
+  border-radius: 3px;
+  font-weight: 700;
+}
+
+.kw-point_of_view        { background: #fcd9b8; }
+.kw-critical_thinking    { background: #c9e4de; }
+.kw-development_evidence { background: #f6e58d; }
+.kw-organization         { background: #d6c6e1; }
+.kw-language_vocabulary  { background: #b9ddc9; }
+.kw-grammar_mechanics    { background: #f5b7b1; }
+
+.kw-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 16px;
+  font-family: "Source Serif 4", serif;
+  font-size: 0.8rem;
+}
+
+.kw-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.kw-legend-swatch {
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+  display: inline-block;
+}
