@@ -38,7 +38,14 @@
   <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=Lexend:wght@400;600&family=Patrick+Hand&family=Permanent+Marker&display=swap" rel="stylesheet">
 
   <!-- This links our separate CSS file, which holds all the visual styling -->
-  <link rel="stylesheet" href="style.css" />
+  <!--
+    The "?v=3" on the end is a version number. Browsers save old copies of
+    CSS and JS files to load pages faster, which can make a site show
+    outdated styling after you update it. Changing this number (v=4, v=5...)
+    every time you edit style.css or app.js forces browsers to download the
+    new version.
+  -->
+  <link rel="stylesheet" href="style.css?v=3" />
 </head>
 <body>
 
@@ -232,16 +239,11 @@
           <dt>Brought back</dt>
           <dd>One score from 1 to 6, plus a short written reason</dd>
 
-          <!--
-            FILL IN THE TWO BLANKS BELOW with your real details, then delete
-            the class="fill-in" so the dashed "blank" styling goes away.
-            Examples: "Temperature 0, default settings" / "March 2026"
-          -->
           <dt>Settings</dt>
-          <dd><span class="Default Settings">add temperature and settings</span></dd>
+          <dd>Default settings</dd>
 
           <dt>Date</dt>
-          <dd><span class="October 11th, 2026">add the date you ran it</span></dd>
+          <dd>October 4, 2026</dd>
         </dl>
 
         <p class="pass-note">
@@ -333,7 +335,7 @@
     since app.js uses the essayData variable that data.js defines.
     Browsers run <script> tags top to bottom, in order.
   -->
-  <script src="data.js"></script>
-  <script src="app.js"></script>
+  <script src="data.js?v=3"></script>
+  <script src="app.js?v=3"></script>
 </body>
 </html>
