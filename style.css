@@ -1,423 +1,811 @@
 /* ============================================================
-   COLOR AND SPACING VARIABLES
-   These are "CSS custom properties" -- reusable values we define
-   once at the top, then reference everywhere else with var(--name).
-   This means if we want to change a color later, we only change it
-   in ONE place instead of hunting through the whole file.
+   COLOR, FONT, AND SPACING VARIABLES
+   "CSS custom properties" -- reusable values defined once here,
+   then referenced everywhere else with var(--name). Change a
+   color here and it updates across the whole page.
    ============================================================ */
 :root {
-  --paper-cream: #faf6ed;       /* main page background, like aged paper */
-  --manila: #d9c9a0;            /* folder-tab header background */
-  --manila-dark: #c2ad7a;       /* darker manila for borders/shadows */
-  --ink: #2b2a26;               /* near-black text color, like ink/graphite */
-  --ink-light: #5c5a52;         /* softer gray-brown for secondary text */
-  --red-pen: #b23a2e;           /* red pen accent, used for the "gap" / disadvantaged group */
-  --sticky-yellow: #f6e58d;     /* sticky note color for one essay group */
-  --sticky-mint: #b9ddc9;       /* sticky note color for the other essay group */
-  --line-blue: #a9c7dd;         /* faint ruled-notebook-line color */
-  --shadow: rgba(43, 42, 38, 0.18); /* soft shadow color used under cards */
+  /* The classroom itself */
+  --wall: #e1e8ec;              /* painted cinder-block wall (page background) */
+  --mortar: #cdd7dd;            /* the lines between the blocks */
+  --board: #fbfcfd;             /* whiteboard surface */
+  --aluminum-light: #dfe3e6;    /* whiteboard frame, highlight */
+  --aluminum-dark: #9aa3a9;     /* whiteboard frame, shadow */
+  --cork: #c79a63;              /* corkboard */
+  --cork-frame: #8a5a2c;        /* wooden corkboard frame */
+
+  /* Paper */
+  --paper: #fffef9;             /* notebook paper */
+  --rule-blue: #b9d4ea;         /* ruled lines on notebook paper */
+  --margin-red: #ec9a9a;        /* the red margin line */
+
+  /* Ink and markers */
+  --ink: #1f2a3a;               /* pen ink, main text color */
+  --ink-soft: #55606e;          /* pencil gray, secondary text */
+  --marker-blue: #1f4fa3;
+  --marker-red: #cf2f2a;
+  --marker-green: #1e7a4b;
+  --red-pen: #c0271f;           /* teacher's red pen */
+
+  /* Group colors (sticky notes, pencils, pins) */
+  --sticky-yellow: #ffe46b;     /* economically disadvantaged */
+  --sticky-blue: #a6d9f7;       /* not economically disadvantaged */
+  --pencil-yellow: #f4b400;
+  --pencil-blue: #3d8fd1;
+  --eraser-pink: #f3a3a0;
+
+  /* Typography */
+  --font-marker: "Permanent Marker", "Comic Sans MS", cursive;
+  --font-hand: "Patrick Hand", "Segoe Print", "Bradley Hand", cursive;
+  --font-body: "Lexend", "Trebuchet MS", system-ui, sans-serif;
+
+  /* Notebook line spacing: text and ruled lines share this height,
+     so writing sits ON the lines like real notebook paper */
+  --line: 2rem;
 }
 
 /* ============================================================
    BASE PAGE STYLES
    ============================================================ */
 * {
-  /* box-sizing: border-box means padding and border are INCLUDED in
-     an element's declared width, instead of added on top of it.
-     This makes layout math much more predictable. */
+  /* Padding and border are INCLUDED in an element's width,
+     which makes layout math much more predictable */
   box-sizing: border-box;
 }
 
 body {
   margin: 0;
-  background-color: var(--paper-cream);
-  /* Subtle repeating lines across the whole page background, like ruled paper */
-  background-image: repeating-linear-gradient(
-    to bottom,
-    transparent,
-    transparent 31px,
-    var(--line-blue) 32px
-  );
   color: var(--ink);
-  font-family: "Source Serif 4", Georgia, serif;
-  line-height: 1.5;
+  font-family: var(--font-body);
+  font-weight: 400;
+  line-height: 1.6;
+  background-color: var(--wall);
+  /*
+    The cinder-block wall pattern is a tiny SVG image, repeated across
+    the whole page. Each tile draws two rows of offset "blocks".
+    (%23 is how you write the "#" color symbol inside a URL.)
+  */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='80'%3E%3Cg stroke='%23cdd7dd' stroke-width='3' fill='none'%3E%3Cpath d='M0 1.5H160M0 41.5H160M1.5 0V40M81.5 0V40M41.5 40V80M121.5 40V80'/%3E%3C/g%3E%3C/svg%3E");
+}
+
+/* When the essay modal is open, freeze the page behind it */
+body.modal-open {
+  overflow: hidden;
+}
+
+main {
+  padding: 0 16px 64px;
+}
+
+strong, b {
+  font-weight: 600;
+}
+
+/* A clear, visible outline for anyone navigating with the keyboard */
+:focus-visible {
+  outline: 3px dashed var(--marker-blue);
+  outline-offset: 3px;
 }
 
 /* ============================================================
-   HEADER / FOLDER TAB
+   HEADER: THE WHITEBOARD
    ============================================================ */
-.folder-header {
-  /* flex + centering pushes the folder-tab shape to the middle of the page */
-  display: flex;
-  justify-content: center;
-  padding: 40px 20px 20px;
+.whiteboard-wrap {
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 40px 16px 0;
 }
 
-.folder-tab {
-  background-color: var(--manila);
-  border: 2px solid var(--manila-dark);
-  border-radius: 6px 6px 0 0; /* rounds only the TOP corners, like a real folder tab */
-  padding: 24px 40px;
-  max-width: 700px;
+.whiteboard {
+  position: relative; /* lets the ghost writing position itself inside the board */
+  overflow: hidden;
+  padding: 56px 48px 48px;
   text-align: center;
-  box-shadow: 0 6px 14px var(--shadow);
+  /* A soft diagonal glare, like light from the classroom windows */
+  background:
+    linear-gradient(115deg, transparent 30%, rgba(255,255,255,0.9) 42%, transparent 52%),
+    var(--board);
+  /* The metal frame is a thick border; the box-shadows add depth */
+  border: 14px solid var(--aluminum-light);
+  border-color: var(--aluminum-light) var(--aluminum-dark) var(--aluminum-dark) var(--aluminum-light);
+  border-radius: 6px;
+  box-shadow:
+    inset 0 0 40px rgba(31, 42, 58, 0.06),
+    0 10px 24px rgba(31, 42, 58, 0.18);
 }
 
-.folder-tab h1 {
-  margin: 0 0 8px;
-  font-size: 2.2rem;
-  font-weight: 700;
+/* Faint leftover writing someone didn't fully erase */
+.ghost-writing {
+  position: absolute;
+  top: 18px;
+  right: -10px;
+  font-family: var(--font-marker);
+  font-size: 2.6rem;
+  color: rgba(31, 79, 163, 0.07);
+  transform: rotate(-6deg);
+  white-space: nowrap;
+  pointer-events: none;
+  user-select: none;
+}
+
+.whiteboard h1 {
+  position: relative;
+  margin: 0;
+  font-family: var(--font-marker);
+  font-weight: 400;
+  font-size: clamp(2.6rem, 7vw, 4.6rem);
+  line-height: 1.05;
+  color: var(--marker-blue);
+  /* A tiny bit of tilt, like it was written by hand while standing */
+  transform: rotate(-1.5deg);
+}
+
+.marker-underline {
+  display: block;
+  width: min(420px, 80%);
+  height: 20px;
+  margin: 6px auto 22px;
+}
+
+.marker-underline path {
+  fill: none;
+  stroke: var(--marker-red);
+  stroke-width: 5;
+  stroke-linecap: round;
 }
 
 .subtitle {
-  margin: 0;
-  color: var(--ink-light);
-  font-size: 0.95rem;
+  position: relative;
+  max-width: 34em;
+  margin: 0 auto;
+  font-family: var(--font-hand);
+  font-size: 1.4rem;
+  line-height: 1.35;
+  color: var(--marker-green);
+}
+
+/* The aluminum tray along the bottom of the board */
+.marker-tray {
+  position: relative;
+  height: 22px;
+  margin: 0 6%;
+  background: linear-gradient(to bottom, var(--aluminum-light), var(--aluminum-dark));
+  border-radius: 0 0 6px 6px;
+  box-shadow: 0 6px 10px rgba(31, 42, 58, 0.18);
+}
+
+/* Each marker: a white barrel with a colored cap on the left */
+.marker {
+  position: absolute;
+  bottom: 8px;
+  width: 104px;
+  height: 18px;
+  border-radius: 4px 9px 9px 4px;
+  background:
+    linear-gradient(to bottom, rgba(255,255,255,0.6), transparent 50%, rgba(0,0,0,0.08)),
+    #f4f5f6;
+  box-shadow: 0 2px 3px rgba(0,0,0,0.25);
+}
+
+.marker::before {
+  /* the cap */
+  content: "";
+  position: absolute;
+  left: 0;
+  top: -1px;
+  width: 36px;
+  height: 20px;
+  border-radius: 5px 2px 2px 5px;
+  background: var(--cap);
+}
+
+.marker-blue  { --cap: var(--marker-blue);  left: 6%; transform: rotate(-2deg); }
+.marker-red   { --cap: var(--marker-red);   left: calc(6% + 120px); transform: rotate(3deg); }
+.marker-green { --cap: var(--marker-green); left: calc(6% + 236px); transform: rotate(-1deg); }
+
+/* The felt eraser sitting at the right end of the tray */
+.board-eraser {
+  position: absolute;
+  right: 8%;
+  bottom: 6px;
+  width: 120px;
+  height: 30px;
+  border-radius: 6px 6px 3px 3px;
+  background: linear-gradient(to bottom, #2f3b4c 0 70%, #c9c3b8 70% 100%);
+  box-shadow: 0 3px 4px rgba(0,0,0,0.25);
+  transform: rotate(2deg);
 }
 
 /* ============================================================
-   ABOUT SECTION (background text, the prompt card, and the
-   collapsible rubric insert)
+   NOTEBOOK PAPER (used for the About section)
    ============================================================ */
-.about-section {
-  max-width: 700px;
-  margin: 0 auto;
-  padding: 10px 20px 30px;
+.notebook {
+  position: relative;
+  max-width: 760px;
+  margin: 56px auto 0;
+  padding: var(--line) 40px calc(var(--line) * 1.5) 96px;
+  line-height: var(--line);
+  background-color: var(--paper);
+  /*
+    Two background layers:
+    1. the vertical red margin line, 72px from the left
+    2. horizontal blue ruled lines repeating every --line
+  */
+  background-image:
+    linear-gradient(to right, transparent 71px, var(--margin-red) 71px, var(--margin-red) 73px, transparent 73px),
+    linear-gradient(to bottom, transparent calc(var(--line) - 1px), var(--rule-blue) calc(var(--line) - 1px));
+  background-size: 100% 100%, 100% var(--line);
+  /* nudge the ruled lines up so letters sit ON them, not between them */
+  background-position: 0 0, 0 -0.45rem;
+  box-shadow: 0 8px 20px rgba(31, 42, 58, 0.16);
+  transform: rotate(0.4deg);
 }
 
-.about-section h2 {
-  font-size: 1.4rem;
-  text-align: center;
-  margin-bottom: 16px;
+/* Three hole punches down the left side, drawn as wall-colored circles */
+.notebook::before {
+  content: "";
+  position: absolute;
+  left: 22px;
+  top: 0;
+  bottom: 0;
+  width: 22px;
+  background:
+    radial-gradient(circle, var(--wall) 9px, transparent 10px) center 12% / 22px 22px no-repeat,
+    radial-gradient(circle, var(--wall) 9px, transparent 10px) center 50% / 22px 22px no-repeat,
+    radial-gradient(circle, var(--wall) 9px, transparent 10px) center 88% / 22px 22px no-repeat;
 }
 
-.about-section p {
-  font-size: 0.98rem;
-  margin-bottom: 14px;
+.notebook h2 {
+  margin: 0 0 var(--line);
+  font-family: var(--font-hand);
+  font-weight: 400;
+  font-size: 2.1rem;
+  line-height: calc(var(--line) * 1.5);
+  color: var(--marker-blue);
 }
 
-/* The prompt card is styled like a small index card pinned among the text,
-   visually distinct from the surrounding paragraphs */
-.prompt-card {
-  background: white;
-  border: 1px solid var(--manila-dark);
-  border-radius: 4px;
-  padding: 18px 22px;
-  margin: 24px 0;
-  box-shadow: 0 3px 8px var(--shadow);
+.notebook p {
+  margin: 0 0 var(--line);
+  max-width: 62ch;
+  font-size: 1rem;
+}
+
+/* ------------------------------------------------------------
+   INDEX CARD (the writing prompt), held on with tape
+   ------------------------------------------------------------ */
+.index-card {
+  position: relative;
+  margin: var(--line) 0 calc(var(--line) * 1.5);
+  padding: 22px 26px 18px;
+  line-height: 1.75rem;
+  /* index cards have one red line at top and blue lines below */
+  background:
+    linear-gradient(to bottom, transparent 54px, #e9a3a3 54px, #e9a3a3 56px, transparent 56px),
+    repeating-linear-gradient(to bottom, transparent 0 calc(1.75rem - 1px), #cfe1f0 calc(1.75rem - 1px) 1.75rem) 0 56px / 100% calc(100% - 56px) no-repeat,
+    #fff;
+  box-shadow: 0 4px 10px rgba(31, 42, 58, 0.18);
+  transform: rotate(-1deg);
+}
+
+/* the strip of clear tape at the top */
+.index-card::before {
+  content: "";
+  position: absolute;
+  top: -12px;
+  left: 50%;
+  width: 110px;
+  height: 26px;
+  margin-left: -55px;
+  background: rgba(240, 236, 220, 0.75);
+  border-left: 1px dashed rgba(0,0,0,0.08);
+  border-right: 1px dashed rgba(0,0,0,0.08);
+  transform: rotate(3deg);
 }
 
 .prompt-card h3 {
-  margin: 0 0 8px;
-  font-size: 1rem;
-  color: var(--ink-light);
+  margin: 0 0 14px;
+  font-family: var(--font-hand);
+  font-weight: 400;
+  font-size: 1.4rem;
+  line-height: 1.5rem;
+  color: var(--red-pen);
 }
 
 .prompt-card p {
   margin: 0;
-  font-style: italic;
+  font-family: var(--font-hand);
+  font-size: 1.25rem;
+  line-height: 1.75rem;
 }
 
-/* 
-  Styling the native <details>/<summary> element to look like a
-  folded-over paper insert you'd tuck into a folder.
-*/
+/* ------------------------------------------------------------
+   RUBRIC: a click-to-open paper flap
+   ------------------------------------------------------------ */
 .rubric-details {
-  background: var(--manila);
-  border: 1px solid var(--manila-dark);
+  background: #fff;
+  border: 2px dashed var(--rule-blue);
   border-radius: 4px;
-  padding: 14px 20px;
-  margin-top: 10px;
 }
 
 .rubric-details summary {
   cursor: pointer;
-  font-weight: 600;
-  /* Removes the browser's default triangle/arrow marker so we can
-     rely on the summary text alone to signal "click me" */
+  padding: 10px 18px;
+  font-family: var(--font-hand);
+  font-size: 1.3rem;
+  color: var(--marker-blue);
+  /* removes the browser's default triangle so we can draw our own */
   list-style: none;
 }
 
-/* ::-webkit-details-marker also hides that same default arrow in
-   Chrome/Safari specifically, since they handle it slightly differently
-   than the standard "list-style" rule above */
 .rubric-details summary::-webkit-details-marker {
   display: none;
 }
 
+/* Our own arrow: a hand-drawn-looking ✎ that turns when opened */
+.rubric-details summary::before {
+  content: "✎";
+  display: inline-block;
+  margin-right: 10px;
+  transition: transform 0.2s;
+}
+
+.rubric-details[open] summary::before {
+  transform: rotate(90deg);
+}
+
 .rubric-content {
-  margin-top: 14px;
-  background: var(--paper-cream);
-  border-radius: 4px;
-  padding: 16px 20px;
+  padding: 4px 22px 18px;
+  line-height: 1.6;
 }
 
 .rubric-intro {
   font-style: italic;
-  color: var(--ink-light);
-  margin-bottom: 16px;
+  color: var(--ink-soft);
 }
 
 .rubric-level {
-  margin-bottom: 14px;
-  padding-bottom: 14px;
-  border-bottom: 1px dashed var(--manila-dark);
-}
-
-/* Removes the border/spacing after the very last rubric level, so the
-   section doesn't end with a dangling half-border */
-.rubric-level:last-child {
-  border-bottom: none;
-  margin-bottom: 0;
-  padding-bottom: 0;
-}
-
-.rubric-level h4 {
-  margin: 0 0 4px;
-  color: var(--red-pen);
+  display: grid;
+  grid-template-columns: 3.2rem 1fr; /* circled number on the left, description on the right */
+  gap: 14px;
+  align-items: start;
+  padding: 12px 0;
+  border-top: 1px solid var(--rule-blue);
 }
 
 .rubric-level p {
   margin: 0;
-  font-size: 0.9rem;
+  font-size: 0.92rem;
+  line-height: 1.6;
+}
+
+/* A score "circled in red pen". The slightly uneven border-radius
+   values make it look hand-drawn instead of perfectly round. */
+.grade-circle {
+  display: inline-grid;
+  place-items: center;
+  width: 2.8rem;
+  height: 2.6rem;
+  font-family: var(--font-hand);
+  font-size: 1.7rem;
+  line-height: 1;
+  color: var(--red-pen);
+  border: 2.5px solid var(--red-pen);
+  border-radius: 52% 48% 55% 45% / 50% 55% 45% 50%;
+  transform: rotate(-8deg);
 }
 
 /* ============================================================
-   SUMMARY BOARD (corkboard-style section with the two index
-   cards and the hand-built bar chart)
+   CORKBOARD (summary cards + pencil chart)
    ============================================================ */
-.summary-board {
-  max-width: 900px;
-  margin: 0 auto;
-  padding: 20px;
-  text-align: center;
+.corkboard {
+  max-width: 980px;
+  margin: 64px auto 0;
+  padding: 36px 32px 40px;
+  border: 16px solid var(--cork-frame);
+  border-radius: 4px;
+  /* cork texture: scattered darker and lighter specks over a tan base */
+  background-color: var(--cork);
+  background-image:
+    radial-gradient(rgba(90, 55, 20, 0.35) 1px, transparent 1.5px),
+    radial-gradient(rgba(255, 230, 190, 0.35) 1px, transparent 1.5px),
+    radial-gradient(rgba(90, 55, 20, 0.25) 1.5px, transparent 2px);
+  background-size: 11px 13px, 17px 7px, 23px 19px;
+  background-position: 0 0, 5px 3px, 9px 11px;
+  box-shadow:
+    inset 0 0 18px rgba(60, 30, 5, 0.35),
+    0 10px 24px rgba(31, 42, 58, 0.2);
 }
 
-.summary-board h2 {
-  font-size: 1.4rem;
-  margin-bottom: 20px;
+/* The section title, written on a strip of paper pinned to the cork */
+.cork-label {
+  display: table; /* shrink-wraps the strip to the width of the text */
+  margin: 0 auto 32px;
+  padding: 6px 22px;
+  background: var(--paper);
+  font-family: var(--font-hand);
+  font-weight: 400;
+  font-size: 1.9rem;
+  color: var(--ink);
+  box-shadow: 0 3px 6px rgba(0,0,0,0.25);
+  transform: rotate(-1.5deg);
 }
 
 .summary-cards {
-  /* flex lays the two cards out side by side, wrapping to a new line on narrow screens */
   display: flex;
   flex-wrap: wrap;
-  gap: 20px;
+  gap: 28px;
   justify-content: center;
-  margin-bottom: 30px;
+  margin-bottom: 36px;
 }
 
-/* 
-  .summary-card is the base style shared by both group cards.
-  app.js will ALSO add either "disadvantaged" or "not-disadvantaged"
-  as an extra class, which the rules below use to color each card
-  differently.
-*/
+/* Each group's stats on a pinned index card */
 .summary-card {
-  background: white;
-  border-radius: 4px;
-  padding: 20px 28px;
-  min-width: 220px;
-  box-shadow: 0 4px 10px var(--shadow);
-  border-left: 6px solid var(--ink-light); /* overridden below per group */
+  position: relative;
+  flex: 1 1 280px;
+  max-width: 380px;
+  padding: 30px 26px 20px;
+  background: #fff;
+  box-shadow: 0 5px 12px rgba(0,0,0,0.3);
 }
 
-.summary-card.disadvantaged {
-  border-left-color: var(--red-pen);
-}
+.summary-card.disadvantaged     { transform: rotate(-1.5deg); --pin: var(--pencil-yellow); }
+.summary-card.not-disadvantaged { transform: rotate(1.2deg);  --pin: var(--pencil-blue); }
 
-.summary-card.not-disadvantaged {
-  border-left-color: var(--line-blue);
+/* The pushpin, colored to match the group */
+.summary-card::before {
+  content: "";
+  position: absolute;
+  top: -9px;
+  left: 50%;
+  width: 22px;
+  height: 22px;
+  margin-left: -11px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, rgba(255,255,255,0.7), var(--pin) 45%, rgba(0,0,0,0.3) 100%);
+  box-shadow: 2px 4px 4px rgba(0,0,0,0.35);
 }
 
 .summary-card h3 {
-  margin: 0 0 10px;
-  font-size: 1rem;
-  color: var(--ink-light);
+  margin: 0 -26px 14px;
+  padding: 0 26px 8px;
+  border-bottom: 2px solid #e9a3a3; /* the index card's red top line */
+  font-family: var(--font-hand);
+  font-weight: 400;
+  font-size: 1.45rem;
+  line-height: 1.2;
+}
+
+.summary-card h3 .n {
+  display: block;
+  font-size: 1.1rem;
+  color: var(--ink-soft);
+}
+
+.stat-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: 6px 0;
+  border-bottom: 1px solid #d6e5f2; /* index-card ruled lines */
+  font-size: 0.95rem;
+}
+
+.stat-row .value {
   font-weight: 600;
 }
 
-.summary-card .stat-row {
-  display: flex;
-  justify-content: space-between;
-  font-size: 0.95rem;
-  margin-bottom: 4px;
+.gap-row {
+  border-bottom: none;
+  padding-top: 10px;
 }
 
-.summary-card .stat-row .value {
-  font-weight: 700;
-}
-
-/* The gap number gets extra emphasis since it's the headline finding */
-.summary-card .gap-value {
+/* The headline number, in red pen */
+.gap-value {
+  font-family: var(--font-hand);
+  font-size: 2.2rem;
+  line-height: 1;
   color: var(--red-pen);
-  font-size: 1.3rem;
-  font-weight: 700;
 }
 
-/* ============================================================
-   HAND-BUILT BAR CHART
-   Each bar is just a <div> whose WIDTH we set with JavaScript,
-   based on the data. No charting library needed for something
-   this simple.
-   ============================================================ */
-.gap-chart {
-  max-width: 500px;
+/* ------------------------------------------------------------
+   PENCIL CHART
+   Each bar is a pencil built from four parts (left to right):
+   eraser, metal ferrule, painted body, sharpened tip.
+   app.js sets each pencil's width from the data.
+   ------------------------------------------------------------ */
+.chart-paper {
+  max-width: 640px;
   margin: 0 auto;
-  text-align: left;
+  padding: 22px 28px 12px;
+  background: var(--paper);
+  box-shadow: 0 5px 12px rgba(0,0,0,0.3);
+  transform: rotate(0.6deg);
 }
 
-.gap-bar-row {
-  margin-bottom: 16px;
+.chart-paper h3 {
+  margin: 0;
+  font-family: var(--font-hand);
+  font-weight: 400;
+  font-size: 1.5rem;
+}
+
+.chart-note {
+  margin: 2px 0 18px;
+  font-size: 0.85rem;
+  color: var(--ink-soft);
+}
+
+.gap-row-chart {
+  margin-bottom: 18px;
 }
 
 .gap-bar-label {
-  font-size: 0.9rem;
-  margin-bottom: 4px;
   display: flex;
   justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 6px;
+  font-size: 0.9rem;
 }
 
-.gap-bar-track {
-  /* This is the full-width gray background bar that the colored bar sits on top of */
-  background: #eee6d6;
-  border-radius: 4px;
-  height: 18px;
-  overflow: hidden; /* keeps the inner colored bar from poking outside the rounded corners */
+.gap-number {
+  font-family: var(--font-hand);
+  font-size: 1.5rem;
+  color: var(--red-pen);
 }
 
-.gap-bar-fill {
-  height: 100%;
-  border-radius: 4px;
-  /* transition makes the bar animate smoothly to its final width when the page loads,
-     instead of just snapping instantly to full size */
-  transition: width 0.8s ease-out;
+.pencil-track {
+  height: 28px;
 }
+
+.pencil {
+  display: flex;
+  height: 28px;
+  width: 0;            /* app.js grows this to the real width after load */
+  min-width: 90px;     /* even a tiny gap still shows a whole (stubby) pencil */
+  transition: width 1.1s cubic-bezier(0.22, 1, 0.36, 1);
+  filter: drop-shadow(0 3px 2px rgba(0,0,0,0.2));
+}
+
+.pencil-eraser {
+  flex: 0 0 22px;
+  background: linear-gradient(to bottom, #f8c3c0, var(--eraser-pink) 50%, #d98580);
+  border-radius: 7px 0 0 7px;
+}
+
+.pencil-ferrule {
+  flex: 0 0 16px;
+  /* the ridged metal band */
+  background: repeating-linear-gradient(to right, #c7ccd0 0 3px, #9ea6ac 3px 5px);
+}
+
+.pencil-body {
+  flex: 1 1 auto;
+  /* light-to-dark top to bottom gives the pencil a rounded, 3D look */
+  background: linear-gradient(to bottom, var(--body-light) 0 30%, var(--body) 30% 70%, var(--body-dark) 70%);
+}
+
+.pencil-tip {
+  flex: 0 0 38px;
+  /* bare wood, then the graphite point at the very end */
+  background: linear-gradient(to right, #ecc89d 0 68%, var(--lead) 68%);
+  clip-path: polygon(0 0, 100% 50%, 0 100%);
+}
+
+.pencil-yellow { --body: var(--pencil-yellow); --body-light: #ffd34d; --body-dark: #d39a00; --lead: #3a3a3a; }
+.pencil-blue   { --body: var(--pencil-blue);   --body-light: #6fb2e8; --body-dark: #2a6ea8; --lead: #2a6ea8; }
 
 /* ============================================================
-   FILTER CONTROLS
+   ESSAY BOARD (second whiteboard, holding the sticky notes)
    ============================================================ */
-.controls {
-  max-width: 900px;
-  margin: 0 auto 20px;
-  padding: 0 20px;
+.essay-board {
+  max-width: 1140px;
+  margin: 64px auto 0;
+  padding: 32px 28px 40px;
+  background:
+    linear-gradient(115deg, transparent 55%, rgba(255,255,255,0.85) 62%, transparent 70%),
+    var(--board);
+  border: 14px solid;
+  border-color: var(--aluminum-light) var(--aluminum-dark) var(--aluminum-dark) var(--aluminum-light);
+  border-radius: 6px;
+  box-shadow:
+    inset 0 0 40px rgba(31, 42, 58, 0.06),
+    0 10px 24px rgba(31, 42, 58, 0.18);
+}
+
+.essay-board-top {
   display: flex;
-  align-items: center;
   flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px 24px;
+}
+
+/* written on the board in marker */
+.board-heading {
+  margin: 0;
+  font-family: var(--font-marker);
+  font-weight: 400;
+  font-size: clamp(1.7rem, 4vw, 2.4rem);
+  color: var(--marker-red);
+}
+
+.note-key {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 18px;
+  font-size: 0.85rem;
+  color: var(--ink-soft);
+}
+
+.key-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.key-swatch {
+  width: 18px;
+  height: 18px;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.25);
+}
+
+.key-swatch.disadvantaged     { background: var(--sticky-yellow); transform: rotate(-6deg); }
+.key-swatch.not-disadvantaged { background: var(--sticky-blue);   transform: rotate(5deg); }
+
+/* ------------------------------------------------------------
+   FILTER BUTTONS
+   The selected filter gets a highlighter swipe behind its text.
+   ------------------------------------------------------------ */
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
   gap: 10px;
-  justify-content: center;
+  margin: 18px 0 30px;
 }
 
 .controls-label {
-  font-size: 0.9rem;
-  color: var(--ink-light);
+  font-family: var(--font-hand);
+  font-size: 1.3rem;
+  color: var(--ink-soft);
 }
 
 .filter-btn {
-  /* "inherit" makes the button use the page's font instead of the browser's default button font */
-  font-family: inherit;
-  background: white;
-  border: 1px solid var(--manila-dark);
-  border-radius: 20px; /* large radius relative to height makes it fully pill-shaped */
-  padding: 6px 16px;
-  font-size: 0.85rem;
-  cursor: pointer; /* shows a hand cursor on hover, signaling "this is clickable" */
-  transition: background 0.15s;
+  font-family: var(--font-hand);
+  font-size: 1.2rem;
+  color: var(--ink);
+  background: transparent;
+  border: 2px solid var(--ink-soft);
+  border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px; /* wobbly, hand-drawn outline */
+  padding: 4px 16px;
+  cursor: pointer;
 }
 
 .filter-btn:hover {
-  background: var(--paper-cream);
+  border-color: var(--marker-blue);
+  color: var(--marker-blue);
 }
 
-/* .active marks whichever filter button is currently selected */
 .filter-btn.active {
-  background: var(--ink);
-  color: white;
   border-color: var(--ink);
+  /* the highlighter: a bright band across the middle, transparent above and below */
+  background: linear-gradient(to bottom, transparent 18%, #fff176 18%, #fff176 85%, transparent 85%);
 }
 
-/* ============================================================
-   ESSAY GRID (the sticky notes)
-   ============================================================ */
+/* ------------------------------------------------------------
+   STICKY NOTES
+   ------------------------------------------------------------ */
 .essay-grid {
-  max-width: 1100px;
-  margin: 0 auto;
-  padding: 20px;
   display: grid;
-  /* auto-fill + minmax means: fit as many 220px-minimum columns as will
-     comfortably fit on screen, and let them stretch evenly to fill extra space.
-     This is what makes the grid responsive without writing separate
-     mobile-specific column rules. */
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 24px;
+  /* fit as many 200px-minimum columns as the screen allows,
+     stretching them evenly -- this is what makes the grid responsive */
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 30px 24px;
 }
 
 .sticky-note {
-  padding: 16px;
-  border-radius: 2px;
-  /* A slight rotation on each note makes them look hand-placed rather than
-     machine-perfect. app.js sets a different random-ish angle per note. */
-  box-shadow: 0 4px 8px var(--shadow);
+  /* Reset the default <button> look so it can look like paper instead */
+  appearance: none;
+  border: none;
+  font: inherit;
+  color: inherit;
+  text-align: left;
+
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-height: 190px;
+  padding: 22px 16px 16px;
   cursor: pointer;
-  transition: transform 0.15s;
-  font-family: "Caveat", cursive; /* the handwritten font, used only for sticky notes */
+  /* the bottom edge curls up slightly, so the shadow is deeper at the corners */
+  box-shadow:
+    0 1px 1px rgba(0,0,0,0.08),
+    0 12px 10px -8px rgba(0,0,0,0.3);
+  /* --tilt is set per note by app.js */
+  transform: rotate(var(--tilt, 0deg));
+  transition: transform 0.15s, box-shadow 0.15s;
 }
 
-.sticky-note:hover {
-  /* Straightening out + lifting slightly on hover gives clear feedback that it's clickable */
-  transform: rotate(0deg) scale(1.04);
-  z-index: 2; /* brings the hovered note above its neighbors so the scale-up doesn't look clipped */
+/* a strip of tape holding each note up */
+.sticky-note::before {
+  content: "";
+  position: absolute;
+  top: -10px;
+  left: 50%;
+  width: 70px;
+  height: 20px;
+  margin-left: -35px;
+  background: rgba(240, 236, 220, 0.7);
+  transform: rotate(calc(var(--tilt, 0deg) * -2));
 }
 
-.sticky-note.disadvantaged {
-  background: var(--sticky-yellow);
+.sticky-note:hover,
+.sticky-note:focus-visible {
+  /* straighten and lift on hover, so it's clear the note can be opened */
+  transform: rotate(0deg) translateY(-4px) scale(1.03);
+  box-shadow:
+    0 1px 1px rgba(0,0,0,0.08),
+    0 18px 16px -10px rgba(0,0,0,0.35);
+  z-index: 2;
 }
 
-.sticky-note.not-disadvantaged {
-  background: var(--sticky-mint);
+.sticky-note.disadvantaged     { background: var(--sticky-yellow); }
+.sticky-note.not-disadvantaged { background: var(--sticky-blue); }
+
+.note-id {
+  font-family: var(--font-hand);
+  font-size: 1.5rem;
+  line-height: 1.1;
 }
 
-.sticky-note .note-scores {
-  font-family: "Source Serif 4", serif; /* numbers are easier to read in the serif, not the cursive font */
+.note-scores {
   font-size: 0.85rem;
-  margin-bottom: 6px;
-  color: var(--ink-light);
+  color: #3c4654;
 }
 
-.sticky-note .note-id {
-  font-size: 1.3rem;
-  font-weight: 700;
+.note-scores b {
+  font-weight: 600;
+  font-size: 1rem;
+  color: var(--ink);
 }
 
-.sticky-note .note-preview {
+.note-gap {
+  margin-left: 6px;
+  font-family: var(--font-hand);
   font-size: 1.1rem;
-  margin-top: 8px;
-  /* -webkit-line-clamp truncates text after a set number of lines, adding "..."
-     This keeps every sticky note the same height regardless of essay length. */
+  color: var(--ink-soft);
+}
+
+.note-gap.neg {
+  color: var(--red-pen);
+}
+
+.note-preview {
+  margin-top: 6px;
+  font-family: var(--font-hand);
+  font-size: 1.12rem;
+  line-height: 1.3;
+  /* show only 4 lines, then cut off, so every note is the same size */
   display: -webkit-box;
-  -webkit-line-clamp: 3;
+  -webkit-line-clamp: 4;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
 
 /* ============================================================
-   MODAL (the pop-up lined-paper essay view)
+   MODAL (the pop-up notebook-paper essay view)
    ============================================================ */
 .modal-overlay {
-  /* position: fixed takes this element OUT of the normal page flow and
-     pins it relative to the browser window, so it stays in place even
-     if the page is scrolled */
+  /* pinned to the browser window, covering everything */
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(43, 42, 38, 0.6); /* semi-transparent dark overlay behind the modal */
+  inset: 0;
+  z-index: 10;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 20px;
-  z-index: 10; /* ensures the modal sits above every other element on the page */
+  background: rgba(31, 42, 58, 0.62);
 }
 
 /* .hidden is toggled on/off by app.js to show or hide the modal */
@@ -426,101 +814,270 @@ body {
 }
 
 .modal-paper {
-  background: white;
-  background-image: repeating-linear-gradient(
-    to bottom,
-    transparent,
-    transparent 27px,
-    var(--line-blue) 28px
-  );
-  max-width: 900px;
+  position: relative; /* lets the close button position itself relative to the paper */
   width: 100%;
-  max-height: 85vh; /* vh = "viewport height" -- 85% of the visible browser window height */
-  overflow-y: auto; /* adds a scrollbar inside the modal if content is taller than max-height */
-  border-radius: 4px;
-  padding: 40px;
-  position: relative; /* lets the close button position itself relative to THIS box, not the whole page */
-  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+  max-width: 980px;
+  max-height: 88vh;
+  overflow-y: auto;   /* scroll inside the paper if the essay is long */
+  padding: 40px 40px 40px 100px;
+  background-color: var(--paper);
+  background-image:
+    linear-gradient(to right, transparent 75px, var(--margin-red) 75px, var(--margin-red) 77px, transparent 77px),
+    linear-gradient(to bottom, transparent calc(var(--line) - 1px), var(--rule-blue) calc(var(--line) - 1px));
+  background-size: 100% 100%, 100% var(--line);
+  background-position: 0 0, 0 -0.45rem;
+  background-attachment: local; /* the lines scroll WITH the text */
+  box-shadow: 0 14px 40px rgba(0,0,0,0.35);
+}
+
+/* hole punches on the modal paper too */
+.modal-paper::before {
+  content: "";
+  position: absolute;
+  left: 24px;
+  top: 0;
+  height: 100%;
+  min-height: 600px;
+  width: 22px;
+  background:
+    radial-gradient(circle, #8d949c 9px, transparent 10px) center 80px / 22px 22px no-repeat,
+    radial-gradient(circle, #8d949c 9px, transparent 10px) center 300px / 22px 22px no-repeat,
+    radial-gradient(circle, #8d949c 9px, transparent 10px) center 520px / 22px 22px no-repeat;
+  opacity: 0.35;
 }
 
 .modal-close {
   position: absolute;
-  top: 16px;
-  right: 20px;
+  top: 12px;
+  right: 16px;
+  width: 44px;
+  height: 44px;
   background: none;
   border: none;
-  font-size: 1.8rem;
-  cursor: pointer;
-  color: var(--ink-light);
+  font-size: 2.2rem;
   line-height: 1;
+  color: var(--ink-soft);
+  cursor: pointer;
 }
 
 .modal-close:hover {
+  color: var(--red-pen);
+}
+
+.modal-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 18px;
+}
+
+.modal-header h2 {
+  margin: 0;
+  font-family: var(--font-hand);
+  font-weight: 400;
+  font-size: 2.3rem;
+  line-height: 1.2;
+}
+
+/* a little sticky-note tag showing the group */
+.group-tag {
+  padding: 2px 12px;
+  font-family: var(--font-hand);
+  font-size: 1.15rem;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  transform: rotate(-2deg);
+}
+
+.group-tag.disadvantaged     { background: var(--sticky-yellow); }
+.group-tag.not-disadvantaged { background: var(--sticky-blue); }
+
+.score-strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px 34px;
+  margin: 22px 0 10px;
+}
+
+.score-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.88rem;
+  color: var(--ink-soft);
+}
+
+.grade-circle.human {
+  color: var(--marker-blue);
+  border-color: var(--marker-blue);
+}
+
+.grade-circle.ai {
+  color: var(--red-pen);
+  border-color: var(--red-pen);
+}
+
+.gap-scrawl,
+.word-count {
+  font-family: var(--font-hand);
+  font-size: 1.9rem;
+  line-height: 1;
   color: var(--ink);
 }
 
-/* Inside the modal, app.js builds a two-column layout: essay on the left, rationale on the right */
-.modal-columns {
-  display: grid;
-  grid-template-columns: 1.2fr 1fr; /* essay column slightly wider than the rationale column */
-  gap: 32px;
-  margin-top: 20px;
+.gap-scrawl {
+  color: var(--red-pen);
 }
 
-/* On narrow screens, stack the two columns instead of squeezing them side by side */
-@media (max-width: 700px) {
-  .modal-columns {
-    grid-template-columns: 1fr;
-  }
+/* Two columns: essay on the left, grader's comments on the right */
+.modal-columns {
+  display: grid;
+  grid-template-columns: 1.35fr 1fr;
+  gap: 40px;
+  margin-top: 18px;
+}
+
+.modal-columns h3 {
+  margin: 0 0 var(--line) 0;
+  font-family: var(--font-hand);
+  font-weight: 400;
+  font-size: 1.5rem;
+  line-height: var(--line);
+  color: var(--marker-blue);
 }
 
 .modal-essay-text {
   font-size: 0.95rem;
-  white-space: pre-wrap; /* preserves the paragraph breaks already in the essay text */
+  line-height: var(--line);   /* sits on the notebook lines */
+  white-space: pre-wrap;      /* keeps the paragraph breaks already in the essay */
+}
+
+/* The comments column looks like a note clipped beside the essay */
+.comments-column {
+  align-self: start;
+  position: sticky; /* stays in view while you scroll a long essay */
+  top: 0;
+}
+
+.comments-column h3 {
+  color: var(--red-pen);
 }
 
 .modal-rationale {
-  font-size: 0.95rem;
+  font-family: var(--font-hand);
+  font-size: 1.3rem;
+  line-height: var(--line);
+  color: var(--red-pen);
 }
 
 /* ============================================================
    KEYWORD HIGHLIGHTING
-   app.js wraps matched keywords in <mark> tags with one of these
-   category classes, and these rules color each category differently.
+   app.js wraps matched keywords in <mark class="kw-...">.
+   Each one looks like a highlighter stroke: a colored band that
+   doesn't quite reach the top or bottom of the letters.
    ============================================================ */
 mark {
-  /* Reset the browser's default yellow highlight so we can set our own colors per category */
-  background: none;
-  padding: 1px 3px;
-  border-radius: 3px;
-  font-weight: 700;
+  color: var(--ink);
+  padding: 0 0.15em;
+  border-radius: 0.3em 0.15em 0.35em 0.2em;
+  background: linear-gradient(to bottom, transparent 14%, var(--hl) 14%, var(--hl) 88%, transparent 88%);
+  /* if a highlighted phrase wraps onto two lines, style both pieces */
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
 }
 
-.kw-point_of_view        { background: #fcd9b8; }
-.kw-critical_thinking    { background: #c9e4de; }
-.kw-development_evidence { background: #f6e58d; }
-.kw-organization         { background: #d6c6e1; }
-.kw-language_vocabulary  { background: #b9ddc9; }
-.kw-grammar_mechanics    { background: #f5b7b1; }
+.kw-point_of_view        { --hl: #ffc078; } /* orange highlighter */
+.kw-critical_thinking    { --hl: #d3b5ff; } /* purple */
+.kw-development_evidence { --hl: #fff176; } /* classic yellow */
+.kw-organization         { --hl: #9be7ff; } /* blue */
+.kw-language_vocabulary  { --hl: #b4f29a; } /* green */
+.kw-grammar_mechanics    { --hl: #ffa6c9; } /* pink */
 
 .kw-legend {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
-  margin-top: 16px;
-  font-family: "Source Serif 4", serif;
+  gap: 6px 16px;
+  margin-top: var(--line);
   font-size: 0.8rem;
+  line-height: 1.6;
+  color: var(--ink-soft);
 }
 
 .kw-legend-item {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   gap: 6px;
 }
 
+/* each legend swatch is shaped like a highlighter's chisel tip */
 .kw-legend-swatch {
-  width: 12px;
+  width: 22px;
   height: 12px;
-  border-radius: 3px;
-  display: inline-block;
+  background: var(--hl);
+  clip-path: polygon(0 0, 78% 0, 100% 100%, 0 100%);
+}
+
+/* ============================================================
+   SMALLER SCREENS
+   ============================================================ */
+@media (max-width: 760px) {
+  .whiteboard {
+    padding: 44px 22px 34px;
+    border-width: 10px;
+  }
+
+  /* not enough room on a phone for every marker or the doodle */
+  .marker-green,
+  .marker-red,
+  .ghost-writing { display: none; }
+  .board-eraser { width: 90px; }
+
+  .notebook {
+    padding-left: 64px;
+    padding-right: 22px;
+    background-image:
+      linear-gradient(to right, transparent 49px, var(--margin-red) 49px, var(--margin-red) 51px, transparent 51px),
+      linear-gradient(to bottom, transparent calc(var(--line) - 1px), var(--rule-blue) calc(var(--line) - 1px));
+    transform: none;
+  }
+
+  .notebook::before { left: 14px; }
+
+  .corkboard {
+    padding: 28px 16px 32px;
+    border-width: 10px;
+  }
+
+  .essay-board {
+    padding: 24px 16px 32px;
+    border-width: 10px;
+  }
+
+  .modal-overlay { padding: 8px; }
+
+  .modal-paper {
+    padding: 56px 20px 32px 30px;
+    background-image:
+      linear-gradient(to right, transparent 17px, var(--margin-red) 17px, var(--margin-red) 19px, transparent 19px),
+      linear-gradient(to bottom, transparent calc(var(--line) - 1px), var(--rule-blue) calc(var(--line) - 1px));
+  }
+
+  .modal-paper::before { display: none; }
+
+  /* stack the essay and comments instead of squeezing them side by side */
+  .modal-columns {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+
+  .comments-column { position: static; }
+}
+
+/* ============================================================
+   REDUCED MOTION
+   Respect visitors who've asked their device to minimize animation.
+   ============================================================ */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
+  }
 }
