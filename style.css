@@ -76,6 +76,113 @@ body {
 }
 
 /* ============================================================
+   ABOUT SECTION (background text, the prompt card, and the
+   collapsible rubric insert)
+   ============================================================ */
+.about-section {
+  max-width: 700px;
+  margin: 0 auto;
+  padding: 10px 20px 30px;
+}
+
+.about-section h2 {
+  font-size: 1.4rem;
+  text-align: center;
+  margin-bottom: 16px;
+}
+
+.about-section p {
+  font-size: 0.98rem;
+  margin-bottom: 14px;
+}
+
+/* The prompt card is styled like a small index card pinned among the text,
+   visually distinct from the surrounding paragraphs */
+.prompt-card {
+  background: white;
+  border: 1px solid var(--manila-dark);
+  border-radius: 4px;
+  padding: 18px 22px;
+  margin: 24px 0;
+  box-shadow: 0 3px 8px var(--shadow);
+}
+
+.prompt-card h3 {
+  margin: 0 0 8px;
+  font-size: 1rem;
+  color: var(--ink-light);
+}
+
+.prompt-card p {
+  margin: 0;
+  font-style: italic;
+}
+
+/* 
+  Styling the native <details>/<summary> element to look like a
+  folded-over paper insert you'd tuck into a folder.
+*/
+.rubric-details {
+  background: var(--manila);
+  border: 1px solid var(--manila-dark);
+  border-radius: 4px;
+  padding: 14px 20px;
+  margin-top: 10px;
+}
+
+.rubric-details summary {
+  cursor: pointer;
+  font-weight: 600;
+  /* Removes the browser's default triangle/arrow marker so we can
+     rely on the summary text alone to signal "click me" */
+  list-style: none;
+}
+
+/* ::-webkit-details-marker also hides that same default arrow in
+   Chrome/Safari specifically, since they handle it slightly differently
+   than the standard "list-style" rule above */
+.rubric-details summary::-webkit-details-marker {
+  display: none;
+}
+
+.rubric-content {
+  margin-top: 14px;
+  background: var(--paper-cream);
+  border-radius: 4px;
+  padding: 16px 20px;
+}
+
+.rubric-intro {
+  font-style: italic;
+  color: var(--ink-light);
+  margin-bottom: 16px;
+}
+
+.rubric-level {
+  margin-bottom: 14px;
+  padding-bottom: 14px;
+  border-bottom: 1px dashed var(--manila-dark);
+}
+
+/* Removes the border/spacing after the very last rubric level, so the
+   section doesn't end with a dangling half-border */
+.rubric-level:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
+.rubric-level h4 {
+  margin: 0 0 4px;
+  color: var(--red-pen);
+}
+
+.rubric-level p {
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+/* ============================================================
    SUMMARY BOARD (corkboard-style section with the two index
    cards and the hand-built bar chart)
    ============================================================ */
