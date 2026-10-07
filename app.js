@@ -145,30 +145,68 @@ function formatSigned(value) {
 
 
 // ------------------------------------------------------------
-// STEP 5: Render the two summary index cards pinned to the corkboard.
+// STEP 5: Render the report card pinned to the corkboard.
+// Each group gets a column, each statistic gets a row, like
+// subjects and grades on a real report card. The "teacher's
+// remarks" sentence at the bottom is written from the numbers,
+// so it always matches the data.
 // ------------------------------------------------------------
 function renderSummaryCards() {
-  // document.getElementById() finds the HTML element whose id matches
-  // the string we pass in -- this is how JS and HTML "connect."
   const container = document.getElementById("summary-cards");
 
-  // A small helper so we don't repeat the same card-building code twice.
-  function buildCardHTML(stats, cssClass, label) {
-    // .toFixed(2) rounds a number to 2 decimal places and returns it as text
-    return `
-      <div class="summary-card ${cssClass}">
-        <h3>${label} <span class="n">(${stats.n} essays)</span></h3>
-        <div class="stat-row"><span>Mean human score</span><span class="value">${stats.meanHuman.toFixed(2)}</span></div>
-        <div class="stat-row"><span>Mean AI score</span><span class="value">${stats.meanLLM.toFixed(2)}</span></div>
-        <div class="stat-row gap-row"><span>Gap (AI − human)</span><span class="gap-value">${formatSigned(stats.meanGap)}</span></div>
-      </div>
-    `;
-  }
+  // How much bigger the gap is for one group than the other
+  const difference = Math.abs(disadvStats.meanGap - notDisadvStats.meanGap);
+  const disadvDirection = disadvStats.meanGap < 0 ? "below" : "above";
+  const otherDirection = notDisadvStats.meanGap < 0 ? "below" : "above";
 
-  // innerHTML replaces everything inside an element with new HTML content.
-  container.innerHTML =
-    buildCardHTML(disadvStats, "disadvantaged", "Economically disadvantaged") +
-    buildCardHTML(notDisadvStats, "not-disadvantaged", "Not economically disadvantaged");
+  const remarks =
+    `On average, the AI scored economically disadvantaged students ` +
+    `${Math.abs(disadvStats.meanGap).toFixed(2)} points ${disadvDirection} the human graders, ` +
+    `and other students ${Math.abs(notDisadvStats.meanGap).toFixed(2)} points ${otherDirection}. ` +
+    `That's a difference of ${difference.toFixed(2)} points between the two groups.`;
+
+  container.innerHTML = `
+    <div class="report-card">
+      <div class="report-header">
+        <h3>Report card</h3>
+        <p>Grader: ChatGPT-4o mini<br>Assignment: Distance learning essay</p>
+      </div>
+
+      <!-- A real <table>, since this IS tabular data: rows are statistics,
+           columns are the two student groups -->
+      <table class="report-table">
+        <thead>
+          <tr>
+            <th scope="col">Measure</th>
+            <th scope="col"><span class="col-swatch disadvantaged"></span>Economically disadvantaged <span class="n">(${disadvStats.n})</span></th>
+            <th scope="col"><span class="col-swatch not-disadvantaged"></span>Not economically disadvantaged <span class="n">(${notDisadvStats.n})</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th scope="row">Mean human score</th>
+            <td class="grade human">${disadvStats.meanHuman.toFixed(2)}</td>
+            <td class="grade human">${notDisadvStats.meanHuman.toFixed(2)}</td>
+          </tr>
+          <tr>
+            <th scope="row">Mean AI score</th>
+            <td class="grade ai">${disadvStats.meanLLM.toFixed(2)}</td>
+            <td class="grade ai">${notDisadvStats.meanLLM.toFixed(2)}</td>
+          </tr>
+          <tr class="gap-line">
+            <th scope="row">Gap (AI − human)</th>
+            <td class="grade gap">${formatSigned(disadvStats.meanGap)}</td>
+            <td class="grade gap">${formatSigned(notDisadvStats.meanGap)}</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="report-remarks">
+        <span class="remarks-label">Remarks</span>
+        <p>${remarks}</p>
+      </div>
+    </div>
+  `;
 }
 
 
@@ -268,6 +306,12 @@ function renderEssayGrid(filter) {
     const gap = essay.llmScore - essay.humanScore;
     const gapText = gap === 0 ? "same score" : (gap > 0 ? `+${gap}` : `−${Math.abs(gap)}`);
 
+    // The red-pen mark that appears when you hover a note: a check mark
+    // if both graders agreed, or the circled difference if they didn't.
+    const markHTML = gap === 0
+      ? `<svg class="note-mark check" viewBox="0 0 60 50" aria-hidden="true"><path d="M6 28 L22 43 L54 6" /></svg>`
+      : `<span class="note-mark circled" aria-hidden="true">${gapText}</span>`;
+
     // Each note is a <button>, so it can be reached with the Tab key and
     // opened with Enter, not just clicked with a mouse.
     // data-id stores this essay's id, so the click handler knows which essay to open.
@@ -279,6 +323,7 @@ function renderEssayGrid(filter) {
           <span class="note-gap ${gap < 0 ? "neg" : ""}">${gapText}</span>
         </span>
         <span class="note-preview">${preview}</span>
+        ${markHTML}
       </button>
     `;
   }).join("");
@@ -415,9 +460,26 @@ function setupModalClose() {
 
 
 // ------------------------------------------------------------
-// STEP 11: Run everything once the page has finished loading.
+// STEP 11: Number the rulers. The tick marks are drawn in CSS;
+// here we just add a number at every big tick (every 50px), enough
+// numbers to cover even a very wide screen.
+// ------------------------------------------------------------
+function numberRulers() {
+  document.querySelectorAll(".ruler").forEach(ruler => {
+    let numbersHTML = "";
+    for (let i = 0; i <= 30; i++) {
+      numbersHTML += `<span>${i}</span>`;
+    }
+    ruler.innerHTML = `<div class="ruler-numbers">${numbersHTML}</div>`;
+  });
+}
+
+
+// ------------------------------------------------------------
+// STEP 12: Run everything once the page has finished loading.
 // ------------------------------------------------------------
 document.addEventListener("DOMContentLoaded", () => {
+  numberRulers();
   renderSummaryCards();
   renderGapChart();
   renderEssayGrid("all");

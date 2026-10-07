@@ -31,10 +31,11 @@
                            and the grader's comments
     - "Lexend"           : a font designed specifically to be easy to read, used
                            for body text and the essays themselves
+    - "Courier Prime"    : typewriter lettering, ONLY used on the library card
   -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;600&family=Patrick+Hand&family=Permanent+Marker&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=Lexend:wght@400;600&family=Patrick+Hand&family=Permanent+Marker&display=swap" rel="stylesheet">
 
   <!-- This links our separate CSS file, which holds all the visual styling -->
   <link rel="stylesheet" href="style.css" />
@@ -46,13 +47,6 @@
   <!-- ============================================================ -->
   <header class="whiteboard-wrap">
     <div class="whiteboard">
-      <!--
-        A faint, half-erased doodle in the background, like every real
-        classroom whiteboard has. aria-hidden="true" tells screen readers
-        to skip it, since it's purely decoration.
-      -->
-      <span class="ghost-writing" aria-hidden="true">HW due Fri!  y = mx + b</span>
-
       <h1>Grading the Grader</h1>
       <!-- A hand-drawn red underline, made with an inline SVG path -->
       <svg class="marker-underline" viewBox="0 0 400 20" preserveAspectRatio="none" aria-hidden="true">
@@ -90,8 +84,9 @@
         economically disadvantaged students differently?
       </p>
       <p>
-        To test this, 50 real student essays were pulled from a public dataset
-        (25 from economically disadvantaged students, 25 from students who are not),
+        To test this, 50 real student essays were pulled from the PERSUADE 2.0
+        corpus, a public dataset of student writing (see its library card below):
+        25 from economically disadvantaged students and 25 from students who are not,
         all responding to the same writing prompt. Each essay already had a score
         from a trained human grader. Each essay was then given to ChatGPT-4o mini,
         using the same scoring rubric the human graders used, to see how its score
@@ -159,8 +154,109 @@
       </details>
     </section>
 
+
+
+    <!-- A wooden ruler used as a section divider. app.js adds the numbers. -->
+    <div class="ruler" aria-hidden="true"></div>
+
     <!-- ============================================================ -->
-    <!-- SUMMARY SECTION: a corkboard with two pinned index cards and -->
+    <!-- DATASET SOURCE: an old-school library checkout card sitting  -->
+    <!-- in a paper book pocket. The card holds a short description   -->
+    <!-- of the PERSUADE 2.0 corpus; the pocket holds the links.      -->
+    <!-- ============================================================ -->
+    <section class="sources-section">
+      <div class="library-card" role="group" aria-labelledby="dataset-title">
+        <div class="checkout-card">
+          <h2 id="dataset-title">PERSUADE 2.0 corpus</h2>
+          <p class="card-subtitle">Where these essays came from</p>
+
+          <!-- A <dl> ("description list") pairs each label (<dt>) with its value (<dd>),
+               which is exactly the shape of a library card's fields -->
+          <dl class="card-fields">
+            <dt>Made by</dt>
+            <dd>The Learning Agency and Vanderbilt University</dd>
+
+            <dt>Contains</dt>
+            <dd>Over 25,000 argumentative essays written by U.S. students in grades 6&ndash;12,
+                responding to 15 prompts across two writing tasks (independent and source-based)</dd>
+
+            <dt>Scores</dt>
+            <dd>A holistic score for every essay, added in version 2.0, plus proficiency scores
+                for the argument and discourse elements annotated in version 1.0</dd>
+
+            <dt>Writer info</dt>
+            <dd>Grade level, gender, race/ethnicity, English learner status,
+                economic status, and disability status</dd>
+
+            <dt>Used here</dt>
+            <dd>50 essays on the &ldquo;Distance learning&rdquo; prompt, 25 from each economic
+                status group, with their human holistic scores</dd>
+          </dl>
+
+          <!-- A rubber-stamp look for the license -->
+          <span class="license-stamp">CC BY-NC-SA 4.0</span>
+        </div>
+
+        <!-- The paper pocket the card slides into, holding the source links -->
+        <div class="book-pocket">
+          <p class="pocket-heading">Check it out</p>
+          <ul class="pocket-links">
+            <li><a href="https://www.kaggle.com/datasets/nbroad/persaude-corpus-2" target="_blank" rel="noopener">Kaggle dataset</a> (version 2, by Nicholas Broad)</li>
+            <li><a href="https://github.com/scrosseye/persuade_corpus_2.0" target="_blank" rel="noopener">Original corpus on GitHub</a></li>
+            <li><a href="https://the-learning-agency-lab.com/learning-exchange/persuade-dataset/" target="_blank" rel="noopener">About the dataset</a> from The Learning Agency</li>
+            <li><a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en" target="_blank" rel="noopener">License details</a>: essays are shared here under CC BY-NC-SA 4.0</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- ========================================================== -->
+      <!-- HALL PASS: how the AI was asked to grade (the method).     -->
+      <!-- Hall passes are written in marker on a laminated card, so  -->
+      <!-- this one is too.                                           -->
+      <!-- ========================================================== -->
+      <div class="hall-pass" role="group" aria-labelledby="hallpass-title">
+        <span class="pass-hole" aria-hidden="true"></span>
+        <h2 id="hallpass-title">Hall pass</h2>
+        <p class="pass-subtitle">How the AI was asked to grade</p>
+
+        <dl class="pass-fields">
+          <dt>Name</dt>
+          <dd>ChatGPT-4o mini</dd>
+
+          <dt>Going to</dt>
+          <dd>Score 50 essays on the &ldquo;Distance learning&rdquo; prompt</dd>
+
+          <dt>Took along</dt>
+          <dd>The same 1&ndash;6 rubric the human graders used</dd>
+
+          <dt>Brought back</dt>
+          <dd>One score from 1 to 6, plus a short written reason</dd>
+
+          <!--
+            FILL IN THE TWO BLANKS BELOW with your real details, then delete
+            the class="fill-in" so the dashed "blank" styling goes away.
+            Examples: "Temperature 0, default settings" / "March 2026"
+          -->
+          <dt>Settings</dt>
+          <dd><span class="Default Settings">add temperature and settings</span></dd>
+
+          <dt>Date</dt>
+          <dd><span class="October 11th, 2026">add the date you ran it</span></dd>
+        </dl>
+
+        <p class="pass-note">
+          Afterward, the AI's scores were compared with the human scores in R, and the
+          words in its reasons were sorted into rubric categories in Python.
+        </p>
+      </div>
+    </section>
+
+
+    <!-- A wooden ruler used as a section divider. app.js adds the numbers. -->
+    <div class="ruler" aria-hidden="true"></div>
+
+    <!-- ============================================================ -->
+    <!-- SUMMARY SECTION: a corkboard with a pinned report card and   -->
     <!-- a "pencil chart" of the score gaps. Filled in by app.js.     -->
     <!-- We just create empty containers here; JavaScript fills them. -->
     <!-- ============================================================ -->
@@ -171,7 +267,7 @@
         id="summary-cards" is how app.js finds this element to insert content into.
         Think of an id as a unique name tag JavaScript uses to find a specific element.
       -->
-      <div id="summary-cards" class="summary-cards"></div>
+      <div id="summary-cards" class="report-card-holder"></div>
 
       <!-- The pencil chart sits on its own strip of paper pinned to the corkboard -->
       <div class="chart-paper">
@@ -180,6 +276,10 @@
         <div id="gap-chart" class="gap-chart"></div>
       </div>
     </section>
+
+
+    <!-- A wooden ruler used as a section divider. app.js adds the numbers. -->
+    <div class="ruler" aria-hidden="true"></div>
 
     <!-- ============================================================ -->
     <!-- ESSAY BOARD: a second whiteboard holding the filter buttons  -->

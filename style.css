@@ -38,6 +38,7 @@
   --font-marker: "Permanent Marker", "Comic Sans MS", cursive;
   --font-hand: "Patrick Hand", "Segoe Print", "Bradley Hand", cursive;
   --font-body: "Lexend", "Trebuchet MS", system-ui, sans-serif;
+  --font-type: "Courier Prime", "Courier New", monospace;
 
   /* Notebook line spacing: text and ruled lines share this height,
      so writing sits ON the lines like real notebook paper */
@@ -97,7 +98,7 @@ strong, b {
 }
 
 .whiteboard {
-  position: relative; /* lets the ghost writing position itself inside the board */
+  position: relative; 
   overflow: hidden;
   padding: 56px 48px 48px;
   text-align: center;
@@ -112,20 +113,6 @@ strong, b {
   box-shadow:
     inset 0 0 40px rgba(31, 42, 58, 0.06),
     0 10px 24px rgba(31, 42, 58, 0.18);
-}
-
-/* Faint leftover writing someone didn't fully erase */
-.ghost-writing {
-  position: absolute;
-  top: 18px;
-  right: -10px;
-  font-family: var(--font-marker);
-  font-size: 2.6rem;
-  color: rgba(31, 79, 163, 0.07);
-  transform: rotate(-6deg);
-  white-space: nowrap;
-  pointer-events: none;
-  user-select: none;
 }
 
 .whiteboard h1 {
@@ -394,12 +381,292 @@ strong, b {
   transform: rotate(-8deg);
 }
 
+
+/* ============================================================
+   LIBRARY CHECKOUT CARD (dataset source)
+   A typed card on ruled card stock, sliding into a paper pocket.
+   ============================================================ */
+.sources-section {
+  max-width: 1000px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1.5fr 1fr; /* library card wider, hall pass narrower */
+  gap: 48px;
+  align-items: start;
+}
+
+.library-card {
+  position: relative;
+  transform: rotate(-1deg);
+}
+
+.checkout-card {
+  position: relative;
+  /* extra bottom padding: this part of the card hides inside the pocket */
+  padding: 26px 30px 70px;
+  font-family: var(--font-type);
+  font-size: 0.92rem;
+  line-height: 1.45;
+  color: #2a2620;
+  background-color: #fbf6e6;
+  box-shadow: 0 6px 14px rgba(31, 42, 58, 0.2);
+}
+
+.checkout-card h2 {
+  margin: 0;
+  font-family: var(--font-type);
+  font-weight: 700;
+  font-size: 1.5rem;
+  line-height: 1.2;
+}
+
+.card-subtitle {
+  margin: 4px 0 18px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid #c9463d; /* the red rule under the title */
+  color: #6b6252;
+}
+
+/* Two columns: field label on the left, value on the right */
+.card-fields {
+  display: grid;
+  grid-template-columns: 8.5rem 1fr;
+  gap: 10px 14px;
+  margin: 0;
+}
+
+.card-fields dt {
+  font-weight: 700;
+  color: #6b6252;
+}
+
+.card-fields dd {
+  margin: 0;
+}
+
+/* The license, stamped in purple ink at an angle */
+.license-stamp {
+  position: absolute;
+  top: 22px;
+  right: 22px;
+  padding: 4px 10px;
+  font-family: var(--font-type);
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: rgba(108, 54, 160, 0.78);
+  border: 3px double rgba(108, 54, 160, 0.7);
+  border-radius: 4px;
+  transform: rotate(8deg);
+  /* a slightly uneven, inky look */
+  mix-blend-mode: multiply;
+}
+
+/* The manila pocket, overlapping the bottom of the card */
+.book-pocket {
+  position: relative;
+  margin: -54px 16px 0;
+  padding: 20px 24px 18px;
+  background: #e7cf9a;
+  border-radius: 0 0 4px 4px;
+  /* the curved thumb notch at the top, where you'd pull the card out */
+  -webkit-mask: radial-gradient(circle 26px at 50% 0, transparent 25px, #000 26px);
+  mask: radial-gradient(circle 26px at 50% 0, transparent 25px, #000 26px);
+  box-shadow: 0 6px 12px rgba(31, 42, 58, 0.2);
+}
+
+.pocket-heading {
+  margin: 0 0 6px;
+  font-family: var(--font-hand);
+  font-size: 1.45rem;
+  color: #5a4520;
+}
+
+.pocket-links {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 0.88rem;
+  line-height: 1.8;
+  color: #4a3a1c;
+}
+
+.pocket-links a {
+  color: #8a2a10;
+  font-weight: 600;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 3px;
+}
+
+.pocket-links a:hover {
+  color: var(--marker-blue);
+}
+
+/* ============================================================
+   HALL PASS (the method)
+   A laminated card: bright card stock, rounded corners, a glossy
+   diagonal shine, a punched hole, and a string to hang it from.
+   ============================================================ */
+.hall-pass {
+  position: relative;
+  margin-top: 40px; /* room for the string above */
+  padding: 34px 24px 22px;
+  background:
+    linear-gradient(125deg, rgba(255,255,255,0) 35%, rgba(255,255,255,0.55) 45%, rgba(255,255,255,0) 55%),
+    #f7a93b;
+  border: 3px solid rgba(255,255,255,0.75); /* the clear laminate edge */
+  border-radius: 14px;
+  box-shadow: 0 8px 16px rgba(31, 42, 58, 0.22);
+  transform: rotate(2.5deg);
+}
+
+/* the punched hole the string goes through */
+.pass-hole {
+  position: absolute;
+  top: 12px;
+  left: 50%;
+  width: 16px;
+  height: 16px;
+  margin-left: -8px;
+  border-radius: 50%;
+  background: var(--wall);
+  box-shadow: inset 0 1px 2px rgba(0,0,0,0.35);
+}
+
+/* the string loop, hanging from a hook above the card */
+.hall-pass::before {
+  content: "";
+  position: absolute;
+  top: -40px;
+  left: 50%;
+  width: 46px;
+  height: 60px;
+  margin-left: -23px;
+  border: 2px solid #b33a2b;
+  border-bottom: none;
+  border-radius: 50% 50% 0 0;
+}
+
+.hall-pass h2 {
+  margin: 0;
+  font-family: var(--font-marker);
+  font-weight: 400;
+  font-size: 2.4rem;
+  line-height: 1.1;
+  color: #1c2533;
+  text-align: center;
+}
+
+.pass-subtitle {
+  margin: 4px 0 16px;
+  font-family: var(--font-hand);
+  font-size: 1.25rem;
+  color: #3c2a10;
+  text-align: center;
+}
+
+.pass-fields {
+  margin: 0;
+  padding: 12px 14px;
+  background: rgba(255, 255, 255, 0.72); /* the white write-on area */
+  border-radius: 6px;
+}
+
+.pass-fields dt {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: #7a5520;
+}
+
+.pass-fields dd {
+  margin: 0 0 8px;
+  padding-bottom: 2px;
+  border-bottom: 1px solid rgba(122, 85, 32, 0.35); /* the line you write on */
+  font-family: var(--font-hand);
+  font-size: 1.2rem;
+  line-height: 1.25;
+  color: var(--marker-blue);
+}
+
+.pass-fields dd:last-of-type {
+  margin-bottom: 0;
+}
+
+/* A visible blank for the details only you know. Delete this
+   class from index.html once you've filled them in. */
+.fill-in {
+  color: #9a6a2a;
+  background: repeating-linear-gradient(-45deg, transparent 0 6px, rgba(247, 169, 59, 0.25) 6px 12px);
+  outline: 2px dashed #d08a2a;
+  outline-offset: 1px;
+}
+
+.pass-note {
+  margin: 14px 0 0;
+  font-size: 0.82rem;
+  line-height: 1.5;
+  color: #3c2a10;
+}
+
+/* ============================================================
+   RULER DIVIDERS
+   Tick marks are background stripes: a small tick every 10px
+   and a tall tick every 50px. app.js adds the numbers.
+   ============================================================ */
+.ruler {
+  position: relative;
+  max-width: 760px;
+  height: 46px;
+  margin: 56px auto;
+  overflow: hidden;
+  border-radius: 3px;
+  background:
+    /* tall ticks */
+    linear-gradient(to right, #4a3418 1.5px, transparent 1.5px) 14px 0 / 50px 18px repeat-x,
+    /* small ticks */
+    linear-gradient(to right, #4a3418 1px, transparent 1px) 14px 0 / 10px 9px repeat-x,
+    /* wood grain */
+    repeating-linear-gradient(to bottom, rgba(120, 80, 30, 0.08) 0 2px, transparent 2px 7px),
+    linear-gradient(to bottom, #f0d9a8, #e2c287);
+  box-shadow: 0 4px 8px rgba(31, 42, 58, 0.2);
+}
+
+.ruler:nth-of-type(odd)  { transform: rotate(-0.8deg); }
+.ruler:nth-of-type(even) { transform: rotate(0.6deg); }
+
+/* the hanging hole at the right end of the ruler */
+.ruler::after {
+  content: "";
+  position: absolute;
+  right: 16px;
+  top: 50%;
+  width: 12px;
+  height: 12px;
+  margin-top: -2px;
+  border-radius: 50%;
+  background: var(--wall);
+  box-shadow: inset 0 1px 2px rgba(0,0,0,0.35);
+}
+
+.ruler-numbers {
+  display: flex;
+  position: absolute;
+  top: 19px;
+  left: 10px; /* lines each number up under its tall tick */
+}
+
+.ruler-numbers span {
+  flex: 0 0 50px;
+  font-family: var(--font-type);
+  font-size: 0.75rem;
+  color: #4a3418;
+}
+
 /* ============================================================
    CORKBOARD (summary cards + pencil chart)
    ============================================================ */
 .corkboard {
   max-width: 980px;
-  margin: 64px auto 0;
+  margin: 0 auto;
   padding: 36px 32px 40px;
   border: 16px solid var(--cork-frame);
   border-radius: 4px;
@@ -430,80 +697,161 @@ strong, b {
   transform: rotate(-1.5deg);
 }
 
-.summary-cards {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 28px;
-  justify-content: center;
+/* ------------------------------------------------------------
+   REPORT CARD
+   Light card stock with a double border, pinned at both top
+   corners. Scores are "handwritten" in by the teacher.
+   ------------------------------------------------------------ */
+.report-card-holder {
   margin-bottom: 36px;
 }
 
-/* Each group's stats on a pinned index card */
-.summary-card {
+.report-card {
   position: relative;
-  flex: 1 1 280px;
-  max-width: 380px;
-  padding: 30px 26px 20px;
-  background: #fff;
-  box-shadow: 0 5px 12px rgba(0,0,0,0.3);
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 26px 30px 24px;
+  background: #eef4ef;
+  border: 5px double #5f7f6c;
+  box-shadow: 0 6px 14px rgba(0,0,0,0.3);
+  transform: rotate(-0.8deg);
 }
 
-.summary-card.disadvantaged     { transform: rotate(-1.5deg); --pin: var(--pencil-yellow); }
-.summary-card.not-disadvantaged { transform: rotate(1.2deg);  --pin: var(--pencil-blue); }
-
-/* The pushpin, colored to match the group */
-.summary-card::before {
+/* Two pushpins, one per top corner, in the two group colors */
+.report-card::before,
+.report-card::after {
   content: "";
   position: absolute;
-  top: -9px;
-  left: 50%;
+  top: -12px;
   width: 22px;
   height: 22px;
-  margin-left: -11px;
   border-radius: 50%;
-  background: radial-gradient(circle at 35% 35%, rgba(255,255,255,0.7), var(--pin) 45%, rgba(0,0,0,0.3) 100%);
   box-shadow: 2px 4px 4px rgba(0,0,0,0.35);
 }
 
-.summary-card h3 {
-  margin: 0 -26px 14px;
-  padding: 0 26px 8px;
-  border-bottom: 2px solid #e9a3a3; /* the index card's red top line */
-  font-family: var(--font-hand);
-  font-weight: 400;
-  font-size: 1.45rem;
-  line-height: 1.2;
+.report-card::before {
+  left: 22px;
+  background: radial-gradient(circle at 35% 35%, rgba(255,255,255,0.7), var(--pencil-yellow) 45%, rgba(0,0,0,0.3) 100%);
 }
 
-.summary-card h3 .n {
-  display: block;
-  font-size: 1.1rem;
-  color: var(--ink-soft);
+.report-card::after {
+  right: 22px;
+  background: radial-gradient(circle at 35% 35%, rgba(255,255,255,0.7), var(--pencil-blue) 45%, rgba(0,0,0,0.3) 100%);
 }
 
-.stat-row {
+.report-header {
   display: flex;
+  flex-wrap: wrap;
   justify-content: space-between;
-  align-items: baseline;
-  padding: 6px 0;
-  border-bottom: 1px solid #d6e5f2; /* index-card ruled lines */
+  align-items: flex-end;
+  gap: 8px 24px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid #5f7f6c;
+}
+
+.report-header h3 {
+  margin: 0;
+  font-family: var(--font-type);
+  font-weight: 700;
+  font-size: 1.7rem;
+  color: #2f4a3b;
+}
+
+.report-header p {
+  margin: 0;
+  font-family: var(--font-type);
+  font-size: 0.85rem;
+  line-height: 1.4;
+  text-align: right;
+  color: #4b6455;
+}
+
+.report-table {
+  width: 100%;
+  margin-top: 8px;
+  border-collapse: collapse;
+}
+
+.report-table th,
+.report-table td {
+  padding: 10px 8px;
+  border-bottom: 1px solid #b9cdbf;
+  text-align: left;
+  vertical-align: bottom;
+}
+
+.report-table thead th {
+  font-family: var(--font-type);
+  font-weight: 700;
+  font-size: 0.8rem;
+  line-height: 1.3;
+  color: #4b6455;
+}
+
+.report-table thead .n {
+  font-weight: 400;
+}
+
+.col-swatch {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  margin-right: 6px;
+  vertical-align: -1px;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.25);
+}
+
+.col-swatch.disadvantaged     { background: var(--sticky-yellow); }
+.col-swatch.not-disadvantaged { background: var(--sticky-blue); }
+
+.report-table tbody th {
+  width: 34%; /* room for the measure names on one line */
+  font-weight: 400;
   font-size: 0.95rem;
 }
 
-.stat-row .value {
-  font-weight: 600;
-}
-
-.gap-row {
-  border-bottom: none;
-  padding-top: 10px;
-}
-
-/* The headline number, in red pen */
-.gap-value {
+/* the "grades", written in by hand */
+.report-table .grade {
   font-family: var(--font-hand);
-  font-size: 2.2rem;
+  font-size: 1.7rem;
   line-height: 1;
+}
+
+.grade.human { color: var(--marker-blue); }
+.grade.ai    { color: var(--ink); }
+
+.gap-line th,
+.gap-line td {
+  border-bottom: none;
+}
+
+.grade.gap {
+  font-size: 2.3rem;
+  color: var(--red-pen);
+}
+
+.report-remarks {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 4px 16px;
+  align-items: baseline;
+  margin-top: 8px;
+  padding-top: 12px;
+  border-top: 2px solid #5f7f6c;
+}
+
+.remarks-label {
+  font-family: var(--font-type);
+  font-weight: 700;
+  font-size: 0.85rem;
+  color: #4b6455;
+}
+
+.report-remarks p {
+  margin: 0;
+  font-family: var(--font-hand);
+  font-size: 1.3rem;
+  line-height: 1.35;
   color: var(--red-pen);
 }
 
@@ -599,7 +947,7 @@ strong, b {
    ============================================================ */
 .essay-board {
   max-width: 1140px;
-  margin: 64px auto 0;
+  margin: 0 auto;
   padding: 32px 28px 40px;
   background:
     linear-gradient(115deg, transparent 55%, rgba(255,255,255,0.85) 62%, transparent 70%),
@@ -793,6 +1141,70 @@ strong, b {
   overflow: hidden;
 }
 
+/* ------------------------------------------------------------
+   RED-PEN HOVER MARKS
+   Hovering a note "grades" it: a check mark if the AI and the
+   human gave the same score, or the circled difference if not.
+   ------------------------------------------------------------ */
+.note-mark {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+
+.sticky-note:hover .note-mark,
+.sticky-note:focus-visible .note-mark {
+  opacity: 1;
+}
+
+/* The check is an SVG line that "draws itself" by animating its dash */
+.note-mark.check {
+  width: 46px;
+  height: 38px;
+}
+
+.note-mark.check path {
+  fill: none;
+  stroke: var(--red-pen);
+  stroke-width: 6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 80;
+  stroke-dashoffset: 80;
+}
+
+.sticky-note:hover .note-mark.check path,
+.sticky-note:focus-visible .note-mark.check path {
+  animation: draw-check 0.35s ease-out forwards;
+}
+
+@keyframes draw-check {
+  to { stroke-dashoffset: 0; }
+}
+
+/* The circled difference, scribbled on quickly */
+.note-mark.circled {
+  display: grid;
+  place-items: center;
+  width: 54px;
+  height: 46px;
+  font-family: var(--font-hand);
+  font-size: 1.6rem;
+  color: var(--red-pen);
+  border: 3px solid var(--red-pen);
+  border-radius: 55% 45% 52% 48% / 48% 55% 45% 52%;
+  transform: rotate(-10deg) scale(0.6);
+  transition: opacity 0.15s, transform 0.2s cubic-bezier(0.3, 1.6, 0.5, 1);
+}
+
+.sticky-note:hover .note-mark.circled,
+.sticky-note:focus-visible .note-mark.circled {
+  transform: rotate(-10deg) scale(1);
+}
+
 /* ============================================================
    MODAL (the pop-up notebook-paper essay view)
    ============================================================ */
@@ -951,14 +1363,44 @@ strong, b {
   white-space: pre-wrap;      /* keeps the paragraph breaks already in the essay */
 }
 
-/* The comments column looks like a note clipped beside the essay */
+/* The comments column is a separate slip of paper, paper-clipped
+   beside the essay, the way a teacher attaches feedback */
 .comments-column {
   align-self: start;
   position: sticky; /* stays in view while you scroll a long essay */
-  top: 0;
+  top: 8px;
+  padding: 28px 22px 20px;
+  background: #fff9f4;
+  box-shadow: 0 4px 12px rgba(31, 42, 58, 0.18);
+  transform: rotate(1deg);
+}
+
+/* The paperclip: two nested rounded outlines, drawn with borders */
+.comments-column::before,
+.comments-column::after {
+  content: "";
+  position: absolute;
+  border: 3px solid #8e979e;
+  border-radius: 10px;
+}
+
+.comments-column::before {
+  top: -16px;
+  right: 30px;
+  width: 18px;
+  height: 52px;
+}
+
+.comments-column::after {
+  top: -8px;
+  right: 35px;
+  width: 8px;
+  height: 34px;
+  border-radius: 6px;
 }
 
 .comments-column h3 {
+  margin-bottom: 10px;
   color: var(--red-pen);
 }
 
@@ -1027,8 +1469,7 @@ mark {
 
   /* not enough room on a phone for every marker or the doodle */
   .marker-green,
-  .marker-red,
-  .ghost-writing { display: none; }
+  .marker-red { display: none; }
   .board-eraser { width: 90px; }
 
   .notebook {
@@ -1069,7 +1510,24 @@ mark {
     gap: 24px;
   }
 
-  .comments-column { position: static; }
+  .comments-column { position: static; transform: none; }
+
+  .sources-section { grid-template-columns: 1fr; gap: 64px; }
+  .ruler { margin: 44px auto; }
+
+  .report-card { padding: 22px 14px 18px; }
+  .report-header p { text-align: left; }
+  .report-table th, .report-table td { padding: 8px 4px; }
+  .report-table thead th { font-size: 0.7rem; }
+  .report-table tbody th { font-size: 0.82rem; }
+  .report-table .grade { font-size: 1.4rem; }
+  .grade.gap { font-size: 1.8rem; }
+  .report-remarks { grid-template-columns: 1fr; }
+
+  .card-fields { grid-template-columns: 1fr; gap: 2px; }
+  .card-fields dd { margin-bottom: 10px; }
+  .license-stamp { position: static; display: inline-block; margin-top: 12px; }
+  .checkout-card { padding: 22px 20px 70px; }
 }
 
 /* ============================================================
@@ -1079,5 +1537,9 @@ mark {
 @media (prefers-reduced-motion: reduce) {
   * {
     transition: none !important;
+    animation: none !important;
   }
+
+  /* without the animation, show the check fully drawn */
+  .note-mark.check path { stroke-dashoffset: 0; }
 }
